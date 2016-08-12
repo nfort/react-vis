@@ -27,6 +27,7 @@ import LineChart from './plot/line-chart';
 import LineMarkChart from './plot/linemark-chart';
 import BarChart from './plot/bar-chart';
 import StackedBarChart from './plot/stacked-bar-chart';
+import StackedLineBarChart from './plot/stacked-line-bar-chart';
 import AreaChart from './plot/area-chart';
 import ScatteplotChart from './plot/scatterplot';
 import HeatmapChart from './plot/heatmap-chart';
@@ -85,6 +86,10 @@ const examples = (
       <section>
         <h3>Stacked Bar Series</h3>
         <StackedBarChart />
+      </section>
+      <section>
+        <h3>Stacked Line Bar Series</h3>
+        <StackedLineBarChart />
       </section>
       <section>
         <h3>Heatmap Series</h3>

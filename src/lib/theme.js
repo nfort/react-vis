@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 export const DISCRETE_COLOR_RANGE = [
-  '#12939A',
+  '#33c4cd',
   '#79C7E3',
   '#1A3177',
   '#FF9833',

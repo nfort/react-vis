@@ -20,40 +20,33 @@
 
 import React from 'react';
 
-import {
-  XYPlot,
-  XAxis,
-  YAxis,
-  VerticalGridLines,
-  HorizontalGridLines,
-  VerticalBarSeries} from '../../';
+import AbstractSeries from './abstract-series';
+import LineOneSeries from './line';
 
-export default class Example extends React.Component {
+class VerticalLineBarSeries extends AbstractSeries {
+
+  static getParentConfig(attr) {
+    const isDomainAdjustmentNeeded = attr === 'x';
+    const zeroBaseValue = attr === 'y';
+    return {
+      isDomainAdjustmentNeeded,
+      zeroBaseValue
+    };
+  }
+
   render() {
     return (
-      <XYPlot
-        width={300}
-        height={300}
-        stackBy="y">
-        <VerticalGridLines />
-        <HorizontalGridLines />
-        <XAxis />
-        <YAxis />
-        <VerticalBarSeries
-          data={[
-            {x: 1, y: 10},
-            {x: 2, y: 5},
-            {x: 3, y: 15}
-          ]}
-        />
-        <VerticalBarSeries
-          data={[
-            {x: 1, y: 12},
-            {x: 2, y: 2},
-            {x: 3, y: 11}
-          ]}
-        />
-      </XYPlot>
+    <LineOneSeries
+      {...this.props}
+      linePosAttr="x"
+      valuePosAttr="y"
+      lineSizeAttr="x2"
+      valueSizeAttr="height"
+    />
     );
   }
 }
+
+VerticalLineBarSeries.displayName = 'VerticalLineBarSeries';
+
+export default VerticalLineBarSeries;
