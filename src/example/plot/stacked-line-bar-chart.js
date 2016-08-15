@@ -29,37 +29,59 @@ import {
   VerticalBarSeries,
   VerticalLineBarSeries} from '../../';
 
+/**
+ * Get the array of x and y pairs.
+ * The function tries to avoid too large changes of the chart.
+ * @param {number} total Total number of points
+ * @returns {Array} Array of data.
+ * @private
+ */
+function getRandomSeriesData(total) {
+  const result = [];
+  let lastY = Math.random() * 40 - 20;
+  let y;
+  const firstY = lastY;
+  for (let i = 0; i <= total; i++) {
+    y = Math.abs(Math.random() * firstY - firstY / 2 + lastY);
+    result.push({
+      x: i,
+      y
+    });
+    lastY = y;
+  }
+  return result;
+}
+
+function getRandomArray(count) {
+  let a = [];
+  for (let i = 0; i <= count; i++) {
+    a.push(i);
+  }
+  return a;
+}
+
+const data = getRandomArray(5);
+const dataLabel = ['01:12','02:12','03:12','04:12','05:12'];
+
+function getLabel(x) {
+
+}
+
 export default class Example extends React.Component {
   render() {
     return (
       <XYPlot
-        width={500}
-        height={300}
+        width={720}
+        height={165}
         stackBy="y">
-        <VerticalGridLines />
         <HorizontalGridLines />
-        <XAxis />
+        <XAxis labelFormat={x => dataLabel[x]} labelValues={data} />
         <YAxis />
         <VerticalBarSeries
-          data={[
-            {x: 1, y: 5},
-            {x: 2, y: 10},
-            {x: 3, y: 15}
-          ]}
+          data={getRandomSeriesData(30)}
         />
         <VerticalLineBarSeries
-          data={[
-            {x: 1, y: 20},
-            {x: 2, y: 28},
-            {x: 3, y: 5}
-          ]}
-        />
-        <VerticalLineBarSeries
-          data={[
-            {x: 1, y: 22},
-            {x: 2, y: 18},
-            {x: 3, y: 3}
-          ]}
+          data={getRandomSeriesData(30)}
         />
       </XYPlot>
     );
