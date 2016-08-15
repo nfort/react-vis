@@ -40,8 +40,7 @@ class VerticalLineBarSeries extends AbstractSeries {
       {...this.props}
       linePosAttr="x"
       valuePosAttr="y"
-      lineSizeAttr="x2"
-      valueSizeAttr="height"
+      stroke="red"
     />
     );
   }

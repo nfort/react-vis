@@ -33,7 +33,7 @@ export default class Example extends React.Component {
   render() {
     return (
       <XYPlot
-        width={300}
+        width={500}
         height={300}
         stackBy="y">
         <VerticalGridLines />
@@ -49,9 +49,16 @@ export default class Example extends React.Component {
         />
         <VerticalLineBarSeries
           data={[
-            {x: 1, y: 12},
-            {x: 2, y: 2},
-            {x: 3, y: 11}
+            {x: 1, y: 20},
+            {x: 2, y: 28},
+            {x: 3, y: 5}
+          ]}
+        />
+        <VerticalLineBarSeries
+          data={[
+            {x: 1, y: 22},
+            {x: 2, y: 18},
+            {x: 3, y: 3}
           ]}
         />
       </XYPlot>

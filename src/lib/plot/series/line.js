@@ -20,17 +20,9 @@
 
 import React from 'react';
 import * as d3Selection from 'd3-selection';
-import * as d3Shape from 'd3-shape';
 
 import AbstractSeries from './abstract-series';
 import {getDOMNode} from '../../utils/react-utils';
-
-import {DEFAULT_OPACITY} from '../../theme';
-
-const STROKE_STYLES = {
-  dashed: '6, 2',
-  solid: null
-};
 
 class LineOneSeries extends AbstractSeries {
 
@@ -41,13 +33,6 @@ class LineOneSeries extends AbstractSeries {
       valuePosAttr: React.PropTypes.string,
       lineSizeAttr: React.PropTypes.string,
       valueSizeAttr: React.PropTypes.string
-    };
-  }
-
-  static get defaultProps() {
-    return {
-      strokeStyle: 'solid',
-      opacity: 1
     };
   }
 
@@ -67,6 +52,7 @@ class LineOneSeries extends AbstractSeries {
       lineSizeAttr,
       valuePosAttr,
       linePosAttr,
+      innerHeight,
       valueSizeAttr} = this.props;
 
     let {
@@ -87,26 +73,33 @@ class LineOneSeries extends AbstractSeries {
       sameTypeIndex = 0;
     }
 
-    const line = d3Selection.select(container).selectAll('line')
-      .data(data);
+    const rects = d3Selection.select(container).selectAll('line')
+      .data(data)
+      .on('mouseover', this._mouseOverWithValue)
+      .on('mouseout', this._mouseOutWithValue)
+      .on('click', this._clickWithValue);
 
     const itemSize = (distance / 2) * 0.85;
-
-    debugger;
-    this._applyTransition(line)
-      .attr(linePosAttr, d => lineFunctor(d) - itemSize +
-        (itemSize * 2 / sameTypeTotal * sameTypeIndex)
-      )
-      .attr(lineSizeAttr, itemSize * 2 / sameTypeTotal)
-      .attr(valuePosAttr,
-        d => Math.min(value0Functor(d), valueFunctor(d)))
-      .attr(valueSizeAttr,
-        d => Math.abs(-value0Functor(d) + valueFunctor(d)));
+    this._applyTransition(rects)
+      .style('opacity', this._getAttributeFunctor('opacity'))
+      .style('stroke', this._getAttributeFunctor('stroke') ||
+        this._getAttributeFunctor('color'))
+      .attr("x1", d => lineFunctor(d) - itemSize + (itemSize * 2 / sameTypeTotal * sameTypeIndex))
+      .attr("x2", d => lineFunctor(d) - itemSize + (itemSize * 2 / sameTypeTotal * sameTypeIndex) + (itemSize * 2 / sameTypeTotal))
+      .attr("y1", d => {
+        var t = Math.abs(-value0Functor(d) + valueFunctor(d));
+        var t1 = Math.max(value0Functor(d), valueFunctor(d));
+        return innerHeight - t;
+      })
+      .attr("y2", d => {
+        var t = Math.abs(-value0Functor(d) + valueFunctor(d));
+        var t1 = Math.max(value0Functor(d), valueFunctor(d));
+        return innerHeight - t;
+      });
   }
 
   render() {
-    const {data, strokeWidth, marginLeft, marginTop} = this.props;
-    console.log(this);
+    const {data, marginLeft, marginTop} = this.props;
     if (!data) {
       return null;
     }
@@ -115,14 +108,7 @@ class LineOneSeries extends AbstractSeries {
         className="rv-xy-plot__series rv-xy-plot__series--bar"
         ref="container"
         transform={`translate(${marginLeft},${marginTop})`}>
-        {data.map((d, i) => {
-          return <line
-            key={i}
-            style={{
-              stroke: 'rgb(255,0,0)',
-              strokeWidth
-            }}/>
-        })}
+        {data.map((d, i) => <line style={{opacity: 0}} key={i}/>)}
       </g>
     );
   }
