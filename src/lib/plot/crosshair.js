@@ -131,6 +131,7 @@ class Crosshair extends PureRenderComponent {
       marginTop,
       marginLeft,
       innerWidth,
+      widthBar,
       innerHeight} = this.props;
     const value = getFirstNonEmptyValue(values);
     if (!value) {
@@ -140,7 +141,7 @@ class Crosshair extends PureRenderComponent {
     const innerLeft = x(value);
 
     const orientation = (innerLeft > innerWidth / 2) ? 'left' : 'right';
-    const left = marginLeft + innerLeft;
+    const left = marginLeft + innerLeft + (widthBar() / 2);
     const top = marginTop;
     const innerClassName =
       `rv-crosshair__inner rv-crosshair__inner--${orientation}`;
@@ -152,7 +153,7 @@ class Crosshair extends PureRenderComponent {
 
         <div
           className="rv-crosshair__line"
-          style={{height: `${innerHeight}px`}}/>
+          style={{height: `${innerHeight - 2}px`}}/>
 
         <div className={innerClassName}>
           {children ?

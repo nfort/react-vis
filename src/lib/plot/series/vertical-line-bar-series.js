@@ -21,7 +21,7 @@
 import React from 'react';
 
 import AbstractSeries from './abstract-series';
-import LineOneSeries from './line';
+import LineOneSeries from './line-horizontal-series';
 
 class VerticalLineBarSeries extends AbstractSeries {
 
@@ -40,7 +40,7 @@ class VerticalLineBarSeries extends AbstractSeries {
       {...this.props}
       linePosAttr="x"
       valuePosAttr="y"
-      stroke="red"
+      stroke="#039DAB"
     />
     );
   }

@@ -52,7 +52,8 @@ class BarSeries extends AbstractSeries {
       lineSizeAttr,
       valuePosAttr,
       linePosAttr,
-      valueSizeAttr} = this.props;
+      valueSizeAttr,
+      widthBar} = this.props;
 
     let {
       sameTypeTotal = 1,
@@ -79,6 +80,7 @@ class BarSeries extends AbstractSeries {
       .on('click', this._clickWithValue);
 
     const itemSize = (distance / 2) * 0.85;
+    widthBar(itemSize * 2 / sameTypeTotal);
 
     this._applyTransition(rects)
       .style('opacity', this._getAttributeFunctor('opacity'))
@@ -89,7 +91,7 @@ class BarSeries extends AbstractSeries {
       .attr(linePosAttr, d => lineFunctor(d) - itemSize +
         (itemSize * 2 / sameTypeTotal * sameTypeIndex)
       )
-      .attr(lineSizeAttr, itemSize * 2 / sameTypeTotal)
+      .attr(lineSizeAttr, widthBar())
       .attr(valuePosAttr,
         d => Math.min(value0Functor(d), valueFunctor(d)))
       .attr(valueSizeAttr,
@@ -105,7 +107,8 @@ class BarSeries extends AbstractSeries {
       <g
         className="rv-xy-plot__series rv-xy-plot__series--bar"
         ref="container"
-        transform={`translate(${marginLeft},${marginTop})`}>
+        // marginleft increment because we decrement width line for axises
+        transform={`translate(${marginLeft + 1},${marginTop})`}>
         {data.map((d, i) => <rect style={{opacity: 0}} key={i}/>)}
       </g>
     );

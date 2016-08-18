@@ -107,7 +107,8 @@ class LineOneSeries extends AbstractSeries {
       <g
         className="rv-xy-plot__series rv-xy-plot__series--bar"
         ref="container"
-        transform={`translate(${marginLeft},${marginTop})`}>
+        // marginleft increment because we decrement width line for axises
+        transform={`translate(${marginLeft + 1},${marginTop})`}>
         {data.map((d, i) => <line style={{opacity: 0}} key={i}/>)}
       </g>
     );

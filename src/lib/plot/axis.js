@@ -84,7 +84,7 @@ class Axis extends PureRenderComponent {
     }
     axis.tickSize(0, 0);
     axis.tickSizeOuter(0);
-    axis.tickPadding(14);
+    axis.tickPadding(7);
     return axis;
   }
 
@@ -128,6 +128,20 @@ class Axis extends PureRenderComponent {
       .call(this._setAxisLabels(axis));
     applyTransition(this.props, selectedTicks)
       .call(this._setAxisTicks(axis));
+
+    const selectedText = selectedLabels.selectAll('text');
+    this._setOrientationLabels(selectedText);
+  }
+
+  _setOrientationLabels(text) {
+    const {orientationText} = this.props;
+    if (!orientationText) return;
+    text
+      .attr("transform", "rotate(270)")
+      .attr("dy", -11)
+      .attr("x", -10)
+      .attr("y", 14)
+      .style("text-anchor", "end");
   }
 
   componentDidMount() {
@@ -148,9 +162,12 @@ class Axis extends PureRenderComponent {
         <g
           ref="labels"
           className="rv-xy-plot__axis__labels"/>
-        <g
-          ref="ticks"
-          className="rv-xy-plot__axis__ticks"/>
+        { false ?
+          <g
+            ref="ticks"
+            className="rv-xy-plot__axis__ticks"
+          /> : null
+        }
         {hasTitle ?
           <g
             className="rv-xy-plot__axis__title"
