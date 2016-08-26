@@ -28,6 +28,7 @@ class VerticalBarSeries extends AbstractSeries {
   static getParentConfig(attr) {
     const isDomainAdjustmentNeeded = attr === 'x';
     const zeroBaseValue = attr === 'y';
+
     return {
       isDomainAdjustmentNeeded,
       zeroBaseValue

@@ -201,7 +201,7 @@ export default class AbstractSeries extends PureRenderComponent {
    * @returns {number} Scale distance.
    * @protected
    */
-  _getScaleDistance(attr) {
+   _getScaleDistance(attr) {
     const scaleObject = getScaleObjectFromProps(this.props, attr);
     return scaleObject ? scaleObject.distance : 0;
   }

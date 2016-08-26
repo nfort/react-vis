@@ -21,7 +21,10 @@
 import React from 'react';
 
 import PureRenderComponent from '../pure-render-component';
-import {getAttributeFunctor} from '../utils/scales-utils';
+import {getAttributeFunctor, getScaleObjectFromProps, getAttr0Functor} from '../utils/scales-utils';
+import { getColorProfileForDateRange } from '../utils/date-utils';
+
+const PADDING_RIGHT_BAR = 1.7;
 
 /**
  * Format title by detault.
@@ -60,7 +63,7 @@ function getFirstNonEmptyValue(values) {
   return (values || []).find(v => Boolean(v));
 }
 
-class Crosshair extends PureRenderComponent {
+class BackgroundPlot extends PureRenderComponent {
 
   static get propTypes() {
     return {
@@ -82,46 +85,75 @@ class Crosshair extends PureRenderComponent {
     };
   }
 
-  /**
-   * Render crosshair title.
-   * @returns {*} Container with the crosshair title.
-   * @private
-   */
-  _renderCrosshairTitle() {
-    const {values, titleFormat} = this.props;
-    const titleItem = titleFormat(values);
-    if (!titleItem) {
-      return null;
-    }
-    return (
-      <div className="rv-crosshair__title" key="title">
-        <span className="rv-crosshair__title__title">{titleItem.title}</span>
-        {': '}
-        <span className="rv-crosshair__title__value">{titleItem.value}</span>
-      </div>
-    );
+  static get requiresSVG() {
+    return true;
   }
 
-  /**
-   * Render crosshair items (title + value for each series).
-   * @returns {*} Array of React classes with the crosshair values.
-   * @private
-   */
-  _renderCrosshairItems() {
-    const {values, itemsFormat} = this.props;
-    const items = itemsFormat(values);
-    if (!items) {
-      return null;
+  _getScaleDistance(attr) {
+    const scaleObject = getScaleObjectFromProps(this.props, attr);
+    return scaleObject ? scaleObject.distance : 0;
+  }
+
+  calculatePosX(item) {
+    const distance = this._getScaleDistance('x');
+    const itemSize = (distance / 2) * 0.85;
+    const sameTypeTotal = 1;
+    const sameTypeIndex = 0;
+    const lineFunctor = this.getPositionX(item);
+    const result = (lineFunctor) - itemSize +
+      (itemSize * 2 / sameTypeTotal * sameTypeIndex);
+
+    return result;
+  }
+
+  getPositionX(value) {
+    const x = getAttributeFunctor(this.props, 'x');
+    return x(value);
+  }
+
+  _getAttributeFunctor(attr) {
+    return getAttributeFunctor(this.props, attr);
+  }
+
+  calculatePosY() {
+    const poxY = {x: 0, y: this.props.plan};
+    const valueFunctor = this._getAttributeFunctor('y');
+    const value0Functor = getAttr0Functor(this.props, 'y');
+    return Math.abs(-value0Functor(poxY) + valueFunctor(poxY));
+  }
+
+  getRect(value, index, color) {
+    const {
+      plan,
+      innerHeight} = this.props;
+    let width;
+    let left;
+
+    const distance = this._getScaleDistance('x');
+    const itemSize = (distance / 2) * 0.85;
+
+    let firstPositionX = this.calculatePosX({x: 0, y: 0});
+
+    if (index !== 0) {
+      firstPositionX = firstPositionX * 2;
     }
-    return items.filter(i => i).map(function renderValue(item, i) {
-      return (
-        <div className="rv-crosshair__item" key={`item${i}`}>
-          <span className="rv-crosshair__item__title">{item.title}</span>
-          {': '}
-          <span className="rv-crosshair__item__value">{item.value}</span>
-        </div>
-      );
-    });
+
+    left = this.calculatePosX({x: index, y: 0}) - firstPositionX;
+    width = Math.ceil((itemSize * 2) + firstPositionX);
+
+    return (
+        <rect
+          className="rv-xy-plot__background-plot"
+          x={left}
+          y={plan ? innerHeight - this.calculatePosY() : 0}
+          opacity={plan ? 0.1 : 0.9}
+          fill={plan ? '#999999' : color}
+          ref="container"
+          key={index}
+          width={width}
+          height={plan ? this.calculatePosY() : innerHeight}
+        />
+    );
   }
 
   render() {
@@ -133,51 +165,17 @@ class Crosshair extends PureRenderComponent {
       innerWidth,
       widthBar,
       innerHeight} = this.props;
-    const value = getFirstNonEmptyValue(values);
-    if (!value) {
-      return null;
-    }
-    const x = getAttributeFunctor(this.props, 'x');
-    const innerLeft = x(value);
 
-    const orientation = (innerLeft > innerWidth / 2) ? 'left' : 'right';
-
-    let left;
-    if (typeof widthBar == 'function') {
-      left = marginLeft + innerLeft + (widthBar() / 2);
-    } else {
-      left = marginLeft + innerLeft;
-    }
-
-    const top = marginTop;
-    const innerClassName =
-      `rv-crosshair__inner rv-crosshair__inner--${orientation}`;
+    const colorize = getColorProfileForDateRange(values);
 
     return (
-      <div
-        className="rv-crosshair"
-        style={{left: `${left}px`, top: `${top}px`}}>
-
-        <div
-          className="rv-crosshair__line"
-          style={{height: `${innerHeight - 2}px`}}/>
-
-        <div className={innerClassName}>
-          {children ?
-            children :
-            <div className="rv-crosshair__inner__content">
-              <div>
-                {this._renderCrosshairTitle()}
-                {this._renderCrosshairItems()}
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-    );
+      <g transform={`translate(${marginLeft},${marginTop})`}>
+        {values.map((item, index) => {return this.getRect(item, index, colorize[index])})}
+      </g>
+    )
   }
 }
 
-Crosshair.displayName = 'Crosshair';
+BackgroundPlot.displayName = 'BackgroundPlot';
 
-export default Crosshair;
+export default BackgroundPlot;

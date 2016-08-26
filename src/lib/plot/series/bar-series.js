@@ -32,7 +32,8 @@ class BarSeries extends AbstractSeries {
       linePosAttr: React.PropTypes.string,
       valuePosAttr: React.PropTypes.string,
       lineSizeAttr: React.PropTypes.string,
-      valueSizeAttr: React.PropTypes.string
+      valueSizeAttr: React.PropTypes.string,
+      beginPlotFromZeroCoordinate: React.PropTypes.bool
     };
   }
 
@@ -53,7 +54,7 @@ class BarSeries extends AbstractSeries {
       valuePosAttr,
       linePosAttr,
       valueSizeAttr,
-      widthBar} = this.props;
+      beginPlotFromZeroCoordinate} = this.props;
 
     let {
       sameTypeTotal = 1,
@@ -80,22 +81,25 @@ class BarSeries extends AbstractSeries {
       .on('click', this._clickWithValue);
 
     const itemSize = (distance / 2) * 0.85;
-    widthBar(itemSize * 2 / sameTypeTotal);
+    const coordinateX = beginPlotFromZeroCoordinate ? lineFunctor(data[0]) : itemSize +
+    (itemSize * 2 / sameTypeTotal * sameTypeIndex);
 
     this._applyTransition(rects)
       .style('opacity', this._getAttributeFunctor('opacity'))
       .style('fill', this._getAttributeFunctor('fill') ||
         this._getAttributeFunctor('color'))
-      .style('stroke', this._getAttributeFunctor('stroke') ||
-        this._getAttributeFunctor('color'))
-      .attr(linePosAttr, d => lineFunctor(d) - itemSize +
-        (itemSize * 2 / sameTypeTotal * sameTypeIndex)
-      )
-      .attr(lineSizeAttr, widthBar())
+      .attr(linePosAttr, d => this.calculatePosX(d, coordinateX))
+      .attr(lineSizeAttr, itemSize * 2 / sameTypeTotal)
       .attr(valuePosAttr,
         d => Math.min(value0Functor(d), valueFunctor(d)))
       .attr(valueSizeAttr,
         d => Math.abs(-value0Functor(d) + valueFunctor(d)));
+  }
+
+  calculatePosX(item, coordinateX) {
+    const { linePosAttr } = this.props;
+    const lineFunctor = this._getAttributeFunctor(linePosAttr);
+    return (lineFunctor(item)) - coordinateX;
   }
 
   render() {
@@ -107,8 +111,7 @@ class BarSeries extends AbstractSeries {
       <g
         className="rv-xy-plot__series rv-xy-plot__series--bar"
         ref="container"
-        // marginleft increment because we decrement width line for axises
-        transform={`translate(${marginLeft + 1},${marginTop})`}>
+        transform={`translate(${marginLeft},${marginTop})`}>
         {data.map((d, i) => <rect style={{opacity: 0}} key={i}/>)}
       </g>
     );

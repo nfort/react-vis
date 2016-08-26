@@ -27,6 +27,7 @@
     "d3-axis": "^1.0.3",
     "d3-collection": "^1.0.1",
     "d3-color": "^1.0.1",
+    "d3-format": "^1.0.2",
     "d3-hierarchy": "^1.0.2",
     "d3-scale": "^1.0.3",
     "d3-selection": "^1.0.2",
@@ -34,6 +35,9 @@
     "d3-transition": "^1.0.1",
     "deep-equal": "^1.0.1",
     "global": "^4.3.0",
+    "lodash": "^4.15.0",
+    "moment": "^2.14.1",
+    "moment-range": "^2.2.0",
     "numeral": "^1.5.3",
     "warning": "^2.1.0"
   },

@@ -20,7 +20,7 @@
 
 export const DISCRETE_COLOR_RANGE = [
   '#33c4cd',
-  '#79C7E3',
+  '#78d8de',
   '#1A3177',
   '#FF9833',
   '#EF5D28'

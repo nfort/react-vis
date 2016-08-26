@@ -21,31 +21,32 @@
 import React from 'react';
 
 import AbstractSeries from './abstract-series';
-import LineOneSeries from './line-horizontal-series';
+import BarSeries from './bar-series';
 
-class VerticalLineBarSeries extends AbstractSeries {
+class HorizontalBackgroundSeries extends AbstractSeries {
 
   static getParentConfig(attr) {
-    const isDomainAdjustmentNeeded = attr === 'x';
-    const zeroBaseValue = attr === 'y';
+    // const isDomainAdjustmentNeeded = attr === 'x';
+    const zeroBaseValue = attr === 'x';
     return {
-      isDomainAdjustmentNeeded,
+      // isDomainAdjustmentNeeded,
       zeroBaseValue
     };
   }
 
   render() {
     return (
-    <LineOneSeries
-      {...this.props}
-      linePosAttr="x"
-      valuePosAttr="y"
-      stroke="#039DAB"
-    />
+      <BarSeries
+        {...this.props}
+        linePosAttr="y"
+        valuePosAttr="x"
+        lineSizeAttr="height"
+        valueSizeAttr="width"
+      />
     );
   }
 }
 
-VerticalLineBarSeries.displayName = 'VerticalLineBarSeries';
+HorizontalBackgroundSeries.displayName = 'HorizontalBackgroundSeries';
 
-export default VerticalLineBarSeries;
+export default HorizontalBackgroundSeries;

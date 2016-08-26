@@ -26,8 +26,8 @@ export {default as XYPlot} from './lib/plot/xy-plot';
 export {default as LineSeries} from './lib/plot/series/line-series';
 export {default as VerticalBarSeries}
   from './lib/plot/series/vertical-bar-series';
-export {default as VerticalLineBarSeries}
-  from './lib/plot/series/vertical-line-bar-series';
+export {default as VerticalBackgroundSeries}
+  from './lib/plot/series/vertical-background-series';
 export {default as HorizontalBarSeries}
   from './lib/plot/series/horizontal-bar-series';
 export {default as MarkSeries} from './lib/plot/series/mark-series';
@@ -37,6 +37,7 @@ export {default as LineMarkSeries} from './lib/plot/series/line-mark-series';
 
 export {default as Hint} from './lib/plot/hint';
 export {default as Crosshair} from './lib/plot/crosshair';
+export {default as BackgroundPlot} from './lib/plot/backgroundPlot';
 
 export {default as XAxis} from './lib/plot/x-axis';
 export {default as YAxis} from './lib/plot/y-axis';

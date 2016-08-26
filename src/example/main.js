@@ -28,6 +28,7 @@ import LineMarkChart from './plot/linemark-chart';
 import BarChart from './plot/bar-chart';
 import StackedBarChart from './plot/stacked-bar-chart';
 import StackedLineBarChart from './plot/stacked-line-bar-chart';
+import StackedLineBarPercentChart from './plot/stacked-line-bar-percent-chart';
 import AreaChart from './plot/area-chart';
 import ScatteplotChart from './plot/scatterplot';
 import HeatmapChart from './plot/heatmap-chart';
@@ -54,15 +55,58 @@ import CustomRadiusRadialChart from './radial-chart/custom-radius-radial-chart';
 
 import {isReactDOMSupported} from '../lib/utils/react-utils';
 
+import { getRandomSeriesData, getRandomDataPercent } from '../lib/utils/mock-utils';
+
+const plot1 = {
+  XYPlot: {
+    width: 720,
+    height: 260,
+    stackBy: 'y',
+    margin: {
+      left: 50,
+      right: 0,
+      top: 10,
+      bottom: 50
+    }
+  },
+  chart: getRandomSeriesData(20),
+};
+
+const plot2 = {
+  XYPlot: {
+    width: 310,
+    height: 210,
+    stackBy: 'y',
+    margin: {
+      left: 50,
+      right: 10,
+      top: 10,
+      bottom: 50
+    }
+  },
+  chart: getRandomSeriesData(30),
+};
+
 const examples = (
   <main>
     <header>react-vis</header>
     <article>
-      <h1>Chart</h1>
+      <h1>Stacked Line Bar Series</h1>
       <section>
-        <h3>Stacked Line Bar Series</h3>
-        <StackedLineBarChart />
+        <StackedLineBarChart {...plot1} />
       </section>
+      <h1>Stacked Line Bar Series</h1>
+      <section>
+        <StackedLineBarChart {...plot2} />
+      </section>
+      <section>
+        <StackedLineBarChart {...plot2} />
+      </section>
+      <h1>Stacked Line Bar Percent Series</h1>
+      <section>
+        <StackedLineBarPercentChart/>
+      </section>
+      {/*<h1>Chart</h1>*/}
       {/*<section>*/}
         {/*<ComplexChart />*/}
       {/*</section>*/}

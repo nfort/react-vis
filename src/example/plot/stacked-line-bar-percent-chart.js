@@ -22,7 +22,7 @@ import Numeral from 'numeral';
 import React from 'react';
 import moment from 'moment';
 import { maxBy } from 'lodash';
-import { getRandomSeriesData } from '../../lib/utils/mock-utils';
+import { getRandomSeriesData, getRandomDataPercent } from '../../lib/utils/mock-utils';
 import {
   XYPlot,
   XAxis,
@@ -43,7 +43,7 @@ export default class Example extends React.Component {
     return {
       XYPlot: {
         width: 720,
-        height: 160,
+        height: 118,
         stackBy: 'y',
         margin: {
           left: 50,
@@ -52,7 +52,7 @@ export default class Example extends React.Component {
           bottom: 50
         }
       },
-      chart: getRandomSeriesData(45),
+      chart: getRandomSeriesData(2),
     };
   }
 
@@ -61,8 +61,6 @@ export default class Example extends React.Component {
     const that = this.props;
     const minWidthBar = 4;
     const maxWidthBar = 7;
-
-    console.log(widthBar);
 
     return (value, index, arrayLabel) => {
       if (index % 2 === 0 && (widthBar > minWidthBar && widthBar < maxWidthBar)) {
@@ -85,25 +83,15 @@ export default class Example extends React.Component {
   render() {
     return (
       <XYPlot {...this.props.XYPlot}>
-        <YAxis labelFormat={this._labelFormatY} />
-        <BackgroundPlot
-          values={this.props.chart.map(item => item.xAxisLabel)} />
+        <YAxis />
+        {/*<BackgroundPlot*/}
+          {/*values={this.props.chart.map(item => item.xAxisLabel)} />*/}
         <HorizontalGridLines />
-        <BackgroundPlot
-          plan="15000"
-          values={this.props.chart.map(item => item.plan)} />
         <VerticalBarSeries
           beginPlotFromZeroCoordinate
-          data={this.props.chart.map(item => item.desktop)}
+          data={getRandomDataPercent(30)}
         />
-        <VerticalBarSeries
-          beginPlotFromZeroCoordinate
-          data={this.props.chart.map(item => item.mobile)}
-        />
-        <XAxis orientationText="vertical"
-               labelFormat={this._labelFormatX()}
-               labelValues={this.props.chart.map((item, index) => index)} />
-        {/*<Crosshair widthBar={this.widthBars} values={[{x: 1, y: 'Вывод информация'}, {y: 'Тут такая информация'}]}/>*/}
+        <XAxis />
       </XYPlot>
     );
   }
