@@ -21,7 +21,7 @@
 import React from 'react';
 
 import PureRenderComponent from '../pure-render-component';
-import {getAttributeFunctor} from '../utils/scales-utils';
+import {getAttributeFunctor, getScaleObjectFromProps, getAttr0Functor} from '../utils/scales-utils';
 
 /**
  * Format title by detault.
@@ -83,6 +83,17 @@ class Crosshair extends PureRenderComponent {
   }
 
   /**
+   * Get the scale object distance by the attribute from the list of properties.
+   * @param {string} attr Attribute name.
+   * @returns {number} Scale distance.
+   * @protected
+   */
+  _getScaleDistance(attr) {
+    const scaleObject = getScaleObjectFromProps(this.props, attr);
+    return scaleObject ? scaleObject.distance : 0;
+  }
+
+  /**
    * Render crosshair title.
    * @returns {*} Container with the crosshair title.
    * @private
@@ -131,24 +142,23 @@ class Crosshair extends PureRenderComponent {
       marginTop,
       marginLeft,
       innerWidth,
-      widthBar,
       innerHeight} = this.props;
     const value = getFirstNonEmptyValue(values);
     if (!value) {
       return null;
     }
+
+    const sameTypeTotal = 1;
+    const sameTypeIndex = 0;
+
+    const distance = this._getScaleDistance('x');
     const x = getAttributeFunctor(this.props, 'x');
+    const innerLeftFirst = x({x: 0, y: 0});
     const innerLeft = x(value);
+    const itemSize = (distance / 2) * 0.85;
 
     const orientation = (innerLeft > innerWidth / 2) ? 'left' : 'right';
-
-    let left;
-    if (typeof widthBar == 'function') {
-      left = marginLeft + innerLeft + (widthBar() / 2);
-    } else {
-      left = marginLeft + innerLeft;
-    }
-
+    const left = (marginLeft + innerLeft) + (itemSize);
     const top = marginTop;
     const innerClassName =
       `rv-crosshair__inner rv-crosshair__inner--${orientation}`;
@@ -160,7 +170,7 @@ class Crosshair extends PureRenderComponent {
 
         <div
           className="rv-crosshair__line"
-          style={{height: `${innerHeight - 2}px`}}/>
+          style={{height: `${innerHeight}px`}}/>
 
         <div className={innerClassName}>
           {children ?

@@ -84,8 +84,8 @@ export default class Example extends React.Component {
     return (
       <XYPlot {...this.props.XYPlot}>
         <YAxis />
-        {/*<BackgroundPlot*/}
-          {/*values={this.props.chart.map(item => item.xAxisLabel)} />*/}
+        <BackgroundPlot
+          values={this.props.chart.map(item => item.xAxisLabel)} />
         <HorizontalGridLines />
         <VerticalBarSeries
           beginPlotFromZeroCoordinate

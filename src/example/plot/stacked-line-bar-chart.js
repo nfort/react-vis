@@ -29,8 +29,11 @@ import {
   YAxis,
   Crosshair,
   HorizontalGridLines,
+  makeWidthFlexible,
   VerticalBarSeries,
   BackgroundPlot} from '../../';
+
+const FlexibleXYPlot = makeWidthFlexible(XYPlot);
 
 export default class Example extends React.Component {
   constructor(props) {
@@ -62,8 +65,6 @@ export default class Example extends React.Component {
     const minWidthBar = 4;
     const maxWidthBar = 7;
 
-    console.log(widthBar);
-
     return (value, index, arrayLabel) => {
       if (index % 2 === 0 && (widthBar > minWidthBar && widthBar < maxWidthBar)) {
         return this._getDateFormat(that.chart[index].xAxisLabel);
@@ -90,7 +91,7 @@ export default class Example extends React.Component {
           values={this.props.chart.map(item => item.xAxisLabel)} />
         <HorizontalGridLines />
         <BackgroundPlot
-          plan="15000"
+          plan={17600}
           values={this.props.chart.map(item => item.plan)} />
         <VerticalBarSeries
           beginPlotFromZeroCoordinate
@@ -103,7 +104,7 @@ export default class Example extends React.Component {
         <XAxis orientationText="vertical"
                labelFormat={this._labelFormatX()}
                labelValues={this.props.chart.map((item, index) => index)} />
-        {/*<Crosshair widthBar={this.widthBars} values={[{x: 1, y: 'Вывод информация'}, {y: 'Тут такая информация'}]}/>*/}
+        <Crosshair values={[{x: 0, y: 'Вывод информация'}]}/>
       </XYPlot>
     );
   }

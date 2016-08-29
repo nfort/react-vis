@@ -106,10 +106,10 @@ const examples = (
       <section>
         <StackedLineBarPercentChart/>
       </section>
-      {/*<h1>Chart</h1>*/}
-      {/*<section>*/}
-        {/*<ComplexChart />*/}
-      {/*</section>*/}
+      <h1>Chart</h1>
+      <section>
+        <ComplexChart />
+      </section>
       {/*<h2>Series Types</h2>*/}
       {/*<section>*/}
         {/*<h3>Line Series</h3>*/}
