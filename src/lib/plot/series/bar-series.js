@@ -80,15 +80,15 @@ class BarSeries extends AbstractSeries {
       .on('mouseout', this._mouseOutWithValue)
       .on('click', this._clickWithValue);
 
-    const itemSize = (distance / 2) * 0.85;
-    const coordinateX = beginPlotFromZeroCoordinate ? lineFunctor(data[0]) : itemSize +
-    (itemSize * 2 / sameTypeTotal * sameTypeIndex);
+    const itemSize = (distance / 2) * 0.95;
 
     this._applyTransition(rects)
       .style('opacity', this._getAttributeFunctor('opacity'))
       .style('fill', this._getAttributeFunctor('fill') ||
         this._getAttributeFunctor('color'))
-      .attr(linePosAttr, d => this.calculatePosX(d, coordinateX))
+      .attr(linePosAttr, d => lineFunctor(d) - itemSize +
+        (itemSize * 2 / sameTypeTotal * sameTypeIndex)
+      )
       .attr(lineSizeAttr, itemSize * 2 / sameTypeTotal)
       .attr(valuePosAttr,
         d => Math.min(value0Functor(d), valueFunctor(d)))

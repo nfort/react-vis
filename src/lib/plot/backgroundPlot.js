@@ -96,14 +96,12 @@ class BackgroundPlot extends PureRenderComponent {
 
   calculatePosX(item) {
     const distance = this._getScaleDistance('x');
-    const itemSize = (distance / 2) * 0.85;
+    const itemSize = (distance / 2) * 0.95;
     const sameTypeTotal = 1;
     const sameTypeIndex = 0;
     const lineFunctor = this.getPositionX(item);
-    const result = (lineFunctor) - itemSize +
+    return (lineFunctor) - itemSize +
       (itemSize * 2 / sameTypeTotal * sameTypeIndex);
-
-    return result;
   }
 
   getPositionX(value) {
@@ -122,15 +120,30 @@ class BackgroundPlot extends PureRenderComponent {
     return Math.abs(-value0Functor(poxY) + valueFunctor(poxY));
   }
 
-  getRect(value, index, color) {
+  renderRectangleWithFixedHeight() {
     const {
-      plan,
+      innerWidth,
       innerHeight} = this.props;
-    let width;
-    let left;
+
+    return (
+      <rect
+        className="rv-xy-plot__background-plot"
+        x={0}
+        y={innerHeight - this.calculatePosY()}
+        opacity={0.1}
+        fill={'#999999'}
+        ref="container"
+        width={innerWidth}
+        height={this.calculatePosY()}
+      />
+    );
+  }
+
+  getRect(index, color) {
+    const { innerHeight } = this.props;
 
     const distance = this._getScaleDistance('x');
-    const itemSize = (distance / 2) * 0.85;
+    const itemSize = (distance / 2) * 0.95;
 
     let firstPositionX = this.calculatePosX({x: 0, y: 0});
 
@@ -138,39 +151,47 @@ class BackgroundPlot extends PureRenderComponent {
       firstPositionX = firstPositionX * 2;
     }
 
-    left = this.calculatePosX({x: index, y: 0}) - firstPositionX;
-    width = Math.ceil((itemSize * 2) + firstPositionX);
+    const left = this.calculatePosX({x: index, y: 0}) - firstPositionX;
+    const width = (itemSize * 2) + firstPositionX;
 
     return (
         <rect
           className="rv-xy-plot__background-plot"
           x={left}
-          y={plan ? innerHeight - this.calculatePosY() : 0}
-          opacity={plan ? 0.1 : 0.9}
-          fill={plan ? '#999999' : color}
+          y={0}
+          opacity={0.9}
+          fill={color}
           ref="container"
           key={index}
           width={width}
-          height={plan ? this.calculatePosY() : innerHeight}
+          height={innerHeight}
         />
     );
   }
 
+  renderPlot() {
+    const { values, plan } = this.props;
+
+    if (values) {
+      const colorize = getColorProfileForDateRange(values);
+      return values.map((item, index) => {
+        return this.getRect(index, colorize[index])
+      });
+    }
+
+    if (plan) return this.renderRectangleWithFixedHeight();
+
+    return null;
+  }
+
   render() {
     const {
-      children,
-      values,
       marginTop,
-      marginLeft,
-      innerWidth,
-      widthBar,
-      innerHeight} = this.props;
-
-    const colorize = getColorProfileForDateRange(values);
+      marginLeft} = this.props;
 
     return (
       <g transform={`translate(${marginLeft},${marginTop})`}>
-        {values.map((item, index) => {return this.getRect(item, index, colorize[index])})}
+        {this.renderPlot()}
       </g>
     )
   }

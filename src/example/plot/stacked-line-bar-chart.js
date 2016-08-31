@@ -21,7 +21,6 @@
 import Numeral from 'numeral';
 import React from 'react';
 import moment from 'moment';
-import { maxBy } from 'lodash';
 import { getRandomSeriesData } from '../../lib/utils/mock-utils';
 import {
   XYPlot,
@@ -29,15 +28,24 @@ import {
   YAxis,
   Crosshair,
   HorizontalGridLines,
-  makeWidthFlexible,
   VerticalBarSeries,
   BackgroundPlot} from '../../';
-
-const FlexibleXYPlot = makeWidthFlexible(XYPlot);
 
 export default class Example extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      crosshairValues: [],
+    };
+    this._crosshairValues = [];
+
+    this._onMouseLeave = this._onMouseLeave.bind(this);
+    this._onNearestXs = [
+      this._onNearestX.bind(this, 0),
+      this._onNearestX.bind(this, 1)
+    ];
+
     this.widthBar = ((props.XYPlot.width - props.XYPlot.margin.left
       + props.XYPlot.margin.right) / props.chart.length) - 2;
   }
@@ -56,6 +64,8 @@ export default class Example extends React.Component {
         }
       },
       chart: getRandomSeriesData(45),
+      unscrewed: 20,
+      leftDay: 12,
     };
   }
 
@@ -78,33 +88,97 @@ export default class Example extends React.Component {
     return moment.unix(timestamp).format('DD:MM');
   };
 
+  _getDateFormatForCrosshair = (timestamp) => {
+    return moment.unix(timestamp).format('DD.MM.YY, HH:MM');
+  };
+
   _labelFormatY = (value, index, arrayLabel) => {
     if (value === 0) return;
     return Numeral(value).format('0a').toUpperCase();
   };
 
+  /**
+   * Event handler for onNearestX.
+   * @param {number} seriesIndex Index of the series.
+   * @param {Object} value Selected value.
+   * @private
+   */
+  _onNearestX(seriesIndex, value) {
+    this._crosshairValues = this._crosshairValues.concat();
+    this._crosshairValues[seriesIndex] = value;
+    this.setState({crosshairValues: this._crosshairValues});
+  }
+  /**
+   * Event handler for onMouseLeave.
+   * @private
+   */
+  _onMouseLeave() {
+    this._crosshairValues = [];
+    this.setState({crosshairValues: this._crosshairValues});
+  }
+
+  _formatCrosshairTitle(values) {
+    const countClick = values.reduce((summary, item) => summary + item.y, 0);
+    return {
+      title: 'Кликов',
+      value: countClick
+    };
+  }
+
+  _formatCrosshairItems = (values) => {
+    const index = values[0].x;
+    const date = this._getDateFormatForCrosshair(this.props.chart[index].xAxisLabel);
+    return [{
+      title: 'Дата',
+      value: date
+    }];
+  };
+
+  _formatCrosshairTitleResult = () => {
+    return {
+      title: 'Откручено',
+      value: `${this.props.unscrewed}%`
+    };
+  };
+
+  _formatCrosshairItemsResult = () => {
+    return [{
+      title: 'Осталось',
+      value: `${this.props.leftDay} дней`
+    }];
+  };
+
   render() {
     return (
-      <XYPlot {...this.props.XYPlot}>
+      <XYPlot {...this.props.XYPlot} onMouseLeave={this._onMouseLeave}>
         <YAxis labelFormat={this._labelFormatY} />
         <BackgroundPlot
           values={this.props.chart.map(item => item.xAxisLabel)} />
         <HorizontalGridLines />
         <BackgroundPlot
-          plan={17600}
-          values={this.props.chart.map(item => item.plan)} />
+          plan={27600} />
         <VerticalBarSeries
           beginPlotFromZeroCoordinate
+          onNearestX={this._onNearestXs[0]}
           data={this.props.chart.map(item => item.desktop)}
         />
         <VerticalBarSeries
           beginPlotFromZeroCoordinate
+          onNearestX={this._onNearestXs[1]}
           data={this.props.chart.map(item => item.mobile)}
         />
         <XAxis orientationText="vertical"
                labelFormat={this._labelFormatX()}
                labelValues={this.props.chart.map((item, index) => index)} />
-        <Crosshair values={[{x: 0, y: 'Вывод информация'}]}/>
+        <Crosshair
+          itemsFormat={this._formatCrosshairItems}
+          titleFormat={this._formatCrosshairTitle}
+          values={this.state.crosshairValues}/>
+        <Crosshair values={[{x: 12}]}
+                   hoverShow
+                   lineRight
+                   itemsFormat={this._formatCrosshairItemsResult}
+                   titleFormat={this._formatCrosshairTitleResult}/>
       </XYPlot>
     );
   }

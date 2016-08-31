@@ -15,7 +15,7 @@ export function getRandomSeriesData(total) {
 
 export function getRandomData(x, fixY) {
   let lastY = (Math.random() * 30 - 20) * 1000;
-  let y = Math.abs(Math.random() * lastY - lastY / 2 + lastY);
+  let y = Math.ceil(Math.abs(Math.random() * lastY - lastY / 2 + lastY));
   return {
     x: x,
     y: fixY ? fixY : y

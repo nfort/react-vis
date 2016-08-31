@@ -5,7 +5,7 @@ $rv-xy-plot-axis-font-size: 12px;
 $green: #00A15C;
 $red: #FF4538;
 
-$rv-xy-plot-tooltip-background: #3A3A48;
+$rv-xy-plot-tooltip-background: #363e46;
 $rv-xy-plot-tooltip-color: #fff;
 $rv-xy-plot-tooltip-font-size: 12px;
 $rv-xy-plot-tooltip-border-radius: 4px;
@@ -68,11 +68,31 @@ $rv-xy-plot-tooltip-padding: 7px 10px;
 .rv-crosshair {
   position: absolute;
   font-size: 11px;
-  pointer-events: none;
+  &--hover {
+    padding: 0 5px;
+
+    & .rv-crosshair__inner {
+      display: none;
+    }
+
+    .rv-crosshair__inner--left {
+      right: 10px;
+    }
+
+    .rv-crosshair__inner--right {
+      left: 10px;
+    }
+
+    &:hover {
+      .rv-crosshair__inner {
+        display: block;
+      }
+    }
+  }
 }
 
 .rv-crosshair__line {
-  border-right: 1px dashed #000;
+  border-right: 1px dashed #363e46;
 }
 
 .rv-crosshair__inner {

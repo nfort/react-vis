@@ -150,7 +150,7 @@ class Axis extends PureRenderComponent {
 
   calculateWidth() {
     const distance = this._getScaleDistance('x');
-    return (distance / 2) * 0.85;
+    return (distance / 2) * 0.95;
   }
 
   getPositionX(value) {

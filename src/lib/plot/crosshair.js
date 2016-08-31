@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 import React from 'react';
+import classNames from 'classnames'
 
 import PureRenderComponent from '../pure-render-component';
 import {getAttributeFunctor, getScaleObjectFromProps, getAttr0Functor} from '../utils/scales-utils';
@@ -60,6 +61,9 @@ function getFirstNonEmptyValue(values) {
   return (values || []).find(v => Boolean(v));
 }
 
+// Отступ слева от линии пересечения
+const PADDING_FROM_LINE_CROSSHAIR = 5;
+
 class Crosshair extends PureRenderComponent {
 
   static get propTypes() {
@@ -71,14 +75,18 @@ class Crosshair extends PureRenderComponent {
       marginLeft: React.PropTypes.number,
       marginTop: React.PropTypes.number,
       itemsFormat: React.PropTypes.func,
-      titleFormat: React.PropTypes.func
+      titleFormat: React.PropTypes.func,
+      hoverShow: React.PropTypes.bool,
+      lineRight: React.PropTypes.bool,
     };
   }
 
   static get defaultProps() {
     return {
       titleFormat: defaultTitleFormat,
-      itemsFormat: defaultItemsFormat
+      itemsFormat: defaultItemsFormat,
+      hoverShow: false,
+      lineRight: false,
     };
   }
 
@@ -142,30 +150,36 @@ class Crosshair extends PureRenderComponent {
       marginTop,
       marginLeft,
       innerWidth,
+      hoverShow,
+      lineRight,
       innerHeight} = this.props;
     const value = getFirstNonEmptyValue(values);
     if (!value) {
       return null;
     }
 
-    const sameTypeTotal = 1;
-    const sameTypeIndex = 0;
-
     const distance = this._getScaleDistance('x');
     const x = getAttributeFunctor(this.props, 'x');
-    const innerLeftFirst = x({x: 0, y: 0});
     const innerLeft = x(value);
-    const itemSize = (distance / 2) * 0.85;
+    const itemSize = (distance / 2) * 0.95;
 
     const orientation = (innerLeft > innerWidth / 2) ? 'left' : 'right';
-    const left = (marginLeft + innerLeft) + (itemSize);
+    const leftInitial = (marginLeft + innerLeft);
+    const left = lineRight ? leftInitial  + (itemSize) - PADDING_FROM_LINE_CROSSHAIR : leftInitial;
     const top = marginTop;
     const innerClassName =
       `rv-crosshair__inner rv-crosshair__inner--${orientation}`;
 
+    const className = classNames(
+      `rv-crosshair`,
+      {
+        [`rv-crosshair--hover`]: hoverShow,
+      }
+    );
+
     return (
       <div
-        className="rv-crosshair"
+        className={className}
         style={{left: `${left}px`, top: `${top}px`}}>
 
         <div
