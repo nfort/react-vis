@@ -2,8 +2,8 @@ $rv-xy-plot-axis-font-color: #BFC4C8;
 $rv-xy-plot-axis-line-color: #E7EAEA;
 $rv-xy-plot-axis-font-size: 12px;
 
-$green: #00A15C;
-$red: #FF4538;
+$green: #00a05c;
+$red: #ff4538;
 
 $rv-xy-plot-tooltip-background: #363e46;
 $rv-xy-plot-tooltip-color: #fff;
@@ -99,6 +99,7 @@ $rv-xy-plot-tooltip-padding: 7px 10px;
   position: absolute;
   text-align: left;
   top: 0;
+  z-index: 1;
 }
 
 .rv-crosshair__inner__content {

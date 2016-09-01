@@ -52,46 +52,46 @@ export default class Example extends React.Component {
           bottom: 50
         }
       },
-      chart: getRandomSeriesData(2),
+      chart: getRandomSeriesData(15),
+      timeMarker: 12,
+      planFact: 40,
     };
   }
 
-  _labelFormatX = () => {
-    const widthBar  = this.widthBar;
-    const that = this.props;
-    const minWidthBar = 4;
-    const maxWidthBar = 7;
-
-    return (value, index, arrayLabel) => {
-      if (index % 2 === 0 && (widthBar > minWidthBar && widthBar < maxWidthBar)) {
-        return this._getDateFormat(that.chart[index].xAxisLabel);
-      } else if (widthBar > maxWidthBar) {
-        return this._getDateFormat(that.chart[index].xAxisLabel);
-      }
-    }
-  };
-
-  _getDateFormat = (timestamp) => {
-    return moment.unix(timestamp).format('DD:MM');
-  };
-
   _labelFormatY = (value, index, arrayLabel) => {
     if (value === 0) return;
-    return Numeral(value).format('0a').toUpperCase();
+    return Numeral(value).format('0%').toUpperCase();
+  };
+
+  _formatCrosshairTitleResult = () => {
+    return {
+      title: 'План/Факт',
+      value: `${this.props.planFact}%`
+    };
+  };
+
+  _formatCrosshairItemsResult = () => {
+    return null;
   };
 
   render() {
     return (
       <XYPlot {...this.props.XYPlot}>
-        <YAxis />
+        <YAxis labelFormat={this._labelFormatY} />
         <BackgroundPlot
           values={this.props.chart.map(item => item.xAxisLabel)} />
         <HorizontalGridLines />
         <VerticalBarSeries
           beginPlotFromZeroCoordinate
-          data={getRandomDataPercent(30)}
+          negativeValueColor="#ff4538"
+          positiveValueColor="#00a05c"
+          data={getRandomDataPercent(15)}
         />
-        <XAxis />
+        <Crosshair values={[{x: this.props.timeMarker}]}
+                   hoverShow
+                   lineRight
+                   itemsFormat={this._formatCrosshairItemsResult}
+                   titleFormat={this._formatCrosshairTitleResult}/>
       </XYPlot>
     );
   }

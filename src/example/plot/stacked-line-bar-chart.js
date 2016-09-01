@@ -66,6 +66,8 @@ export default class Example extends React.Component {
       chart: getRandomSeriesData(45),
       unscrewed: 20,
       leftDay: 12,
+      timeMarker: 12,
+      planClick: 25000,
     };
   }
 
@@ -156,7 +158,7 @@ export default class Example extends React.Component {
           values={this.props.chart.map(item => item.xAxisLabel)} />
         <HorizontalGridLines />
         <BackgroundPlot
-          plan={27600} />
+          plan={this.props.planClick} />
         <VerticalBarSeries
           beginPlotFromZeroCoordinate
           onNearestX={this._onNearestXs[0]}
@@ -174,7 +176,7 @@ export default class Example extends React.Component {
           itemsFormat={this._formatCrosshairItems}
           titleFormat={this._formatCrosshairTitle}
           values={this.state.crosshairValues}/>
-        <Crosshair values={[{x: 12}]}
+        <Crosshair values={[{x: this.props.timeMarker}]}
                    hoverShow
                    lineRight
                    itemsFormat={this._formatCrosshairItemsResult}

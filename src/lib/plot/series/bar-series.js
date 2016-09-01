@@ -33,7 +33,9 @@ class BarSeries extends AbstractSeries {
       valuePosAttr: React.PropTypes.string,
       lineSizeAttr: React.PropTypes.string,
       valueSizeAttr: React.PropTypes.string,
-      beginPlotFromZeroCoordinate: React.PropTypes.bool
+      beginPlotFromZeroCoordinate: React.PropTypes.bool,
+      negativeValueColor: React.PropTypes.string,
+      positiveValueColor: React.PropTypes.string
     };
   }
 
@@ -81,25 +83,39 @@ class BarSeries extends AbstractSeries {
       .on('click', this._clickWithValue);
 
     const itemSize = (distance / 2) * 0.95;
+    const valueY = itemSize * 2 / sameTypeTotal;
 
     this._applyTransition(rects)
       .style('opacity', this._getAttributeFunctor('opacity'))
-      .style('fill', this._getAttributeFunctor('fill') ||
+      .attr('fill', this._getAttributeFunctor('fill') ||
         this._getAttributeFunctor('color'))
       .attr(linePosAttr, d => lineFunctor(d) - itemSize +
         (itemSize * 2 / sameTypeTotal * sameTypeIndex)
       )
-      .attr(lineSizeAttr, itemSize * 2 / sameTypeTotal)
+      .attr(lineSizeAttr, valueY)
       .attr(valuePosAttr,
         d => Math.min(value0Functor(d), valueFunctor(d)))
       .attr(valueSizeAttr,
-        d => Math.abs(-value0Functor(d) + valueFunctor(d)));
+      (d, index, arr) => this.calculateHeightRect(d, valueFunctor, value0Functor, index, arr));
   }
 
   calculatePosX(item, coordinateX) {
     const { linePosAttr } = this.props;
     const lineFunctor = this._getAttributeFunctor(linePosAttr);
     return (lineFunctor(item)) - coordinateX;
+  }
+
+  calculateHeightRect(coordinateArray, valueFunctor, value0Functor, index, arr) {
+    const value = -value0Functor(coordinateArray) + valueFunctor(coordinateArray);
+    if (this.props.negativeValueColor && this.props.positiveValueColor) {
+      const currentRect = arr[index];
+      if (value > 0) {
+        currentRect.setAttribute('fill', this.props.negativeValueColor);
+      } else {
+        currentRect.setAttribute('fill', this.props.positiveValueColor);
+      }
+    }
+    return Math.abs(value);
   }
 
   render() {
