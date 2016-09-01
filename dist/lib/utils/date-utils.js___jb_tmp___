@@ -1,0 +1,81 @@
+import moment from 'moment';
+require('moment-range');
+
+// const colors = {
+//   white: '#fff',
+//   grey: '#f8f9fa'
+// };
+
+const colors = {
+  white: 'red',
+  grey: 'green'
+};
+
+
+const LESS_DAY = 'less_day';
+const MORE_DAY = 'more_day';
+const MORE_WEEK = 'more_week';
+const MORE_MONTH = 'more_month';
+
+
+export function getColorProfileForDateRange(arrayDate) {
+  let count = 0;
+  let result;
+
+  const typeRange = getTypeRange(arrayDate[0], arrayDate[arrayDate.length - 1]);
+  console.log(typeRange);
+
+
+  switch (typeRange) {
+    case MORE_MONTH:
+      result = colorizeMonth(arrayDate);
+      break;
+    case MORE_WEEK:
+      break;
+    case MORE_DAY:
+      break;
+    case LESS_DAY:
+      break;
+    default:
+      throw Error('Not found type for data range');
+  }
+
+  return result;
+}
+
+export function getTypeRange(dateStart, dateEnd) {
+  const countDays = moment.duration(dateEnd - dateStart, 'seconds').asDays();
+
+  if (countDays => 30) {
+    return MORE_MONTH;
+  } else if (countDays >= 14) {
+    return MORE_WEEK;
+  } else if (countDays > 1) {
+    return MORE_DAY;
+  } else if (countDays < 1) {
+    return LESS_DAY;
+  }
+}
+
+export function getColorDate(timestamp) {
+  const date = moment.unix(timestamp);
+}
+
+
+function colorizeMonth(arrayDate) {
+  let month;
+  let colorIndex;
+  let colorsBackground = [colors.grey, colors.white];
+
+  return arrayDate.map((timestamp, index) => {
+    if (typeof month === 'undefined') {
+      month =  moment.unix(timestamp).months();
+      colorIndex = 0;
+    } else if (month !== moment.unix(timestamp).months()) {
+      month =  moment.unix(timestamp).months();
+      colorIndex = colorIndex === 0 ? 1 : 0;
+    }
+
+    return colorsBackground[colorIndex];
+  });
+}
