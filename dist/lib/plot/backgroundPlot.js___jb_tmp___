@@ -1,0 +1,162 @@
+// Copyright (c) 2016 Uber Technologies, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+import React from 'react';
+
+import PureRenderComponent from '../pure-render-component';
+import {getAttributeFunctor, getScaleObjectFromProps} from '../utils/scales-utils';
+
+/**
+ * Format title by detault.
+ * @param {Array} values List of values.
+ * @returns {*} Formatted value or undefined.
+ */
+function defaultTitleFormat(values) {
+  const value = getFirstNonEmptyValue(values);
+  if (value) {
+    return {
+      title: 'x',
+      value: value.x
+    };
+  }
+}
+
+/**
+ * Format items by default.
+ * @param {Array} values Array of values.
+ * @returns {*} Formatted list of items.
+ */
+function defaultItemsFormat(values) {
+  return values.map((v, i) => {
+    if (v) {
+      return {value: v.y, title: i};
+    }
+  });
+}
+
+/**
+ * Get the first non-empty item from an array.
+ * @param {Array} values Array of values.
+ * @returns {*} First non-empty value or undefined.
+ */
+function getFirstNonEmptyValue(values) {
+  return (values || []).find(v => Boolean(v));
+}
+
+class BackgroundPlot extends PureRenderComponent {
+
+  static get propTypes() {
+    return {
+      values: React.PropTypes.array,
+      series: React.PropTypes.object,
+      innerWidth: React.PropTypes.number,
+      innerHeight: React.PropTypes.number,
+      marginLeft: React.PropTypes.number,
+      marginTop: React.PropTypes.number,
+      itemsFormat: React.PropTypes.func,
+      titleFormat: React.PropTypes.func
+    };
+  }
+
+  static get defaultProps() {
+    return {
+      titleFormat: defaultTitleFormat,
+      itemsFormat: defaultItemsFormat
+    };
+  }
+
+  static get requiresSVG() {
+    return true;
+  }
+
+  _getScaleDistance(attr) {
+    const scaleObject = getScaleObjectFromProps(this.props, attr);
+    return scaleObject ? scaleObject.distance : 0;
+  }
+
+  getRect(value, index) {
+    const {
+      children,
+      values,
+      marginTop,
+      marginLeft,
+      innerWidth,
+      widthBar,
+      innerHeight} = this.props;
+    console.log(value, index);
+
+    const distance = this._getScaleDistance('x');
+    const itemSize = (distance / 2) * 0.85;
+    const innerLeft = this.getPositionX(value);
+
+    console.log('innerLeft ', innerLeft - itemSize + (itemSize * 2 / 1 * 0));
+
+    const orientation = (innerLeft > innerWidth / 2) ? 'left' : 'right';
+
+    let left;
+    if (typeof widthBar == 'function') {
+      left = innerLeft - itemSize + (itemSize * 2 / 1 * 0);
+    } else {
+      left = marginLeft + innerLeft - itemSize + (itemSize * 2 / 1 * 0);
+    }
+
+    this.props.widthBar(itemSize * 2 / 1);
+    return (
+        <rect
+          className="rv-xy-plot__background-plot"
+          x={left}
+          y={0}
+          opacity={1}
+          fill="#000"
+          stroke="#000"
+          ref="container"
+          key={value.x}
+          width={this.getPositionX(values.data[index + 1]) - itemSize + (itemSize * 2 / 1 * 0)}
+          height={innerHeight}
+        />
+    );
+  }
+
+  getPositionX(value) {
+    const x = getAttributeFunctor(this.props, 'x');
+    return x(value);
+  }
+
+  render() {
+    const {
+      children,
+      values,
+      marginTop,
+      marginLeft,
+      innerWidth,
+      widthBar,
+      innerHeight} = this.props;
+
+    return (
+      <g transform="translate(50, 10)">
+        {values.map((item, index) => {return this.getRect(item, index)})}
+      </g>
+    )
+  }
+}
+
+BackgroundPlot.displayName = 'BackgroundPlot';
+
+export default BackgroundPlot;
