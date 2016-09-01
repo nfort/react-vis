@@ -37,7 +37,7 @@ class YAxis extends PureRenderComponent {
     let ticksTotal;
     if (innerHeight < 700) {
       if (innerHeight > 300) {
-        ticksTotal = 10;
+        ticksTotal = 7;
       } else {
         ticksTotal = 5;
       }

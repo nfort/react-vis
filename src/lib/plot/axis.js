@@ -20,15 +20,23 @@
 
 import React from 'react';
 import * as d3Selection from 'd3-selection';
+import { trim, forEach } from 'lodash';
 
 import PureRenderComponent from '../pure-render-component';
-import {getDOMNode} from '../utils/react-utils';
-import {AXIS_ORIENTATIONS, getAxisFnByOrientation} from '../utils/axis-utils';
-import {getAttributeScale} from '../utils/scales-utils';
+import { getDOMNode } from '../utils/react-utils';
+import { AXIS_ORIENTATIONS, getAxisFnByOrientation } from '../utils/axis-utils';
+import { getAttributeScale, getAttributeFunctor, getScaleObjectFromProps } from '../utils/scales-utils';
 
-import {AnimationPropType, applyTransition} from '../utils/animation-utils';
+import { AnimationPropType, applyTransition } from '../utils/animation-utils';
 
-import {DEFAULT_TICK_SIZE} from '../theme';
+import { DEFAULT_TICK_SIZE } from '../theme';
+
+// Применяем эти константы когда ориентация оси Х идет вертикально
+// Отступ для оси X сверху
+const TOP_FROM_XAXIS = -10;
+// Высота контеинера в котором лежит label для оси X
+// !!! Так как контеинер для оси перевернут на -270 градусовов, то соотвественно высота и ширина поменялись местами
+const HEIGHT_FONT_CONTAINER = 7;
 
 /**
  * Get axis component for the chart/plot.
@@ -73,7 +81,8 @@ class Axis extends PureRenderComponent {
    * @private
    */
   _setAxisLabels(axis) {
-    const {labelFormat, labelValues, ticksTotal} = this.props;
+    const { labelFormat, labelValues, ticksTotal } = this.props;
+
     if (!labelValues) {
       axis.ticks(ticksTotal);
     } else {
@@ -84,7 +93,7 @@ class Axis extends PureRenderComponent {
     }
     axis.tickSize(0, 0);
     axis.tickSizeOuter(0);
-    axis.tickPadding(14);
+    axis.tickPadding(7);
     return axis;
   }
 
@@ -95,7 +104,7 @@ class Axis extends PureRenderComponent {
    * @private
    */
   _setAxisTicks(axis) {
-    const {tickValues, ticksTotal, tickSize} = this.props;
+    const { tickValues, ticksTotal, tickSize } = this.props;
     if (!tickValues) {
       axis.ticks(ticksTotal);
     } else {
@@ -112,13 +121,13 @@ class Axis extends PureRenderComponent {
    * @private
    */
   _render() {
-    const {orientation, attr} = this.props;
+    const { orientation, attr } = this.props;
     const scale = getAttributeScale(this.props, attr);
     if (!scale) {
       return;
     }
 
-    const {labels, ticks} = this.refs;
+    const { labels, ticks } = this.refs;
     const selectedLabels = d3Selection.select(getDOMNode(labels));
     const selectedTicks = d3Selection.select(getDOMNode(ticks));
     const axisFn = getAxisFnByOrientation(orientation);
@@ -128,6 +137,56 @@ class Axis extends PureRenderComponent {
       .call(this._setAxisLabels(axis));
     applyTransition(this.props, selectedTicks)
       .call(this._setAxisTicks(axis));
+
+    const selectedText = selectedLabels.selectAll('text');
+    this._setOrientationLabels(selectedText);
+  }
+
+
+  _getScaleDistance(attr) {
+    const scaleObject = getScaleObjectFromProps(this.props, attr);
+    return scaleObject ? scaleObject.distance : 0;
+  }
+
+  calculateWidth() {
+    const distance = this._getScaleDistance('x');
+    return (distance / 2) * 0.95;
+  }
+
+  getPositionX(value) {
+    const x = getAttributeFunctor(this.props, 'x');
+    return x(value);
+  }
+
+  _setOrientationLabels(text) {
+    const { orientationText } = this.props;
+
+    text.attr("fill", "currentColor");
+
+    if (!orientationText) return;
+
+    const ticks = this.refs.labels.childNodes;
+    forEach(ticks, (item, index) => {
+      if (item.classList.contains('tick')) {
+        const transform = item.getAttribute('transform');
+        let leftTransform = transform.match(/\((([0-9]*[.])?[0-9]+),/gmi)[0];
+        leftTransform = parseFloat(trim(leftTransform, '(,'));
+
+        if (index === 1) {
+          this.firstTickPositionLeft = leftTransform
+        }
+
+        const newTransform = transform.replace(leftTransform, leftTransform - this.firstTickPositionLeft);
+        item.setAttribute('transform', newTransform);
+      }
+    });
+
+    text
+      .attr("transform", "rotate(270)")
+      .attr("dy", 0)
+      .attr("x", TOP_FROM_XAXIS)
+      .attr("y", this.calculateWidth() + (HEIGHT_FONT_CONTAINER / 2))
+      .style("text-anchor", "end");
   }
 
   componentDidMount() {
@@ -139,7 +198,7 @@ class Axis extends PureRenderComponent {
   }
 
   render() {
-    const {title, left, top, className} = this.props;
+    const { title, left, top, className } = this.props;
     const hasTitle = title && title !== '';
     return (
       <g className={`rv-xy-plot__axis ${className}`}
@@ -147,10 +206,13 @@ class Axis extends PureRenderComponent {
          ref="container">
         <g
           ref="labels"
-          className="rv-xy-plot__axis__labels"/>
-        <g
-          ref="ticks"
-          className="rv-xy-plot__axis__ticks"/>
+          className="rv-xy-plot__axis__labels" />
+        { false ?
+          <g
+            ref="ticks"
+            className="rv-xy-plot__axis__ticks"
+          /> : null
+        }
         {hasTitle ?
           <g
             className="rv-xy-plot__axis__title"

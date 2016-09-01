@@ -43,7 +43,6 @@ class XAxis extends PureRenderComponent {
         orientation="bottom"
         titleStyle={{
           transform: `translate(${innerWidth}px, -5px)`,
-          textAnchor: 'end'
         }}
         ticksTotal={getTicksTotalFromSize(innerWidth)}
         top={innerHeight + marginTop}

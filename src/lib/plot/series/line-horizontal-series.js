@@ -24,7 +24,7 @@ import * as d3Selection from 'd3-selection';
 import AbstractSeries from './abstract-series';
 import {getDOMNode} from '../../utils/react-utils';
 
-class BarSeries extends AbstractSeries {
+class LineOneSeries extends AbstractSeries {
 
   static get propTypes() {
     return {
@@ -32,10 +32,7 @@ class BarSeries extends AbstractSeries {
       linePosAttr: React.PropTypes.string,
       valuePosAttr: React.PropTypes.string,
       lineSizeAttr: React.PropTypes.string,
-      valueSizeAttr: React.PropTypes.string,
-      beginPlotFromZeroCoordinate: React.PropTypes.bool,
-      negativeValueColor: React.PropTypes.string,
-      positiveValueColor: React.PropTypes.string
+      valueSizeAttr: React.PropTypes.string
     };
   }
 
@@ -55,8 +52,8 @@ class BarSeries extends AbstractSeries {
       lineSizeAttr,
       valuePosAttr,
       linePosAttr,
-      valueSizeAttr,
-      beginPlotFromZeroCoordinate} = this.props;
+      innerHeight,
+      valueSizeAttr} = this.props;
 
     let {
       sameTypeTotal = 1,
@@ -76,46 +73,29 @@ class BarSeries extends AbstractSeries {
       sameTypeIndex = 0;
     }
 
-    const rects = d3Selection.select(container).selectAll('rect')
+    const rects = d3Selection.select(container).selectAll('line')
       .data(data)
       .on('mouseover', this._mouseOverWithValue)
       .on('mouseout', this._mouseOutWithValue)
       .on('click', this._clickWithValue);
 
-    const itemSize = (distance / 2) * 0.95;
-    const valueY = itemSize * 2 / sameTypeTotal;
-
+    const itemSize = (distance / 2) * 0.85;
     this._applyTransition(rects)
       .style('opacity', this._getAttributeFunctor('opacity'))
-      .attr('fill', this._getAttributeFunctor('fill') ||
+      .style('stroke', this._getAttributeFunctor('stroke') ||
         this._getAttributeFunctor('color'))
-      .attr(linePosAttr, d => lineFunctor(d) - itemSize +
-        (itemSize * 2 / sameTypeTotal * sameTypeIndex)
-      )
-      .attr(lineSizeAttr, valueY)
-      .attr(valuePosAttr,
-        d => Math.min(value0Functor(d), valueFunctor(d)))
-      .attr(valueSizeAttr,
-      (d, index, arr) => this.calculateHeightRect(d, valueFunctor, value0Functor, index, arr));
-  }
-
-  calculatePosX(item, coordinateX) {
-    const { linePosAttr } = this.props;
-    const lineFunctor = this._getAttributeFunctor(linePosAttr);
-    return (lineFunctor(item)) - coordinateX;
-  }
-
-  calculateHeightRect(coordinateArray, valueFunctor, value0Functor, index, arr) {
-    const value = -value0Functor(coordinateArray) + valueFunctor(coordinateArray);
-    if (this.props.negativeValueColor && this.props.positiveValueColor) {
-      const currentRect = arr[index];
-      if (value > 0) {
-        currentRect.setAttribute('fill', this.props.negativeValueColor);
-      } else {
-        currentRect.setAttribute('fill', this.props.positiveValueColor);
-      }
-    }
-    return Math.abs(value);
+      .attr("x1", d => lineFunctor(d) - itemSize + (itemSize * 2 / sameTypeTotal * sameTypeIndex))
+      .attr("x2", d => lineFunctor(d) - itemSize + (itemSize * 2 / sameTypeTotal * sameTypeIndex) + (itemSize * 2 / sameTypeTotal))
+      .attr("y1", d => {
+        var t = Math.abs(-value0Functor(d) + valueFunctor(d));
+        var t1 = Math.max(value0Functor(d), valueFunctor(d));
+        return innerHeight - t;
+      })
+      .attr("y2", d => {
+        var t = Math.abs(-value0Functor(d) + valueFunctor(d));
+        var t1 = Math.max(value0Functor(d), valueFunctor(d));
+        return innerHeight - t;
+      });
   }
 
   render() {
@@ -127,13 +107,14 @@ class BarSeries extends AbstractSeries {
       <g
         className="rv-xy-plot__series rv-xy-plot__series--bar"
         ref="container"
-        transform={`translate(${marginLeft},${marginTop})`}>
-        {data.map((d, i) => <rect style={{opacity: 0}} key={i}/>)}
+        // marginleft increment because we decrement width line for axises
+        transform={`translate(${marginLeft + 1},${marginTop})`}>
+        {data.map((d, i) => <line style={{opacity: 0}} key={i}/>)}
       </g>
     );
   }
 }
 
-BarSeries.displayName = 'BarSeries';
+LineOneSeries.displayName = 'LineOneSeries';
 
-export default BarSeries;
+export default LineOneSeries;

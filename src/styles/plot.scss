@@ -1,8 +1,11 @@
-$rv-xy-plot-axis-font-color: #6B6B76;
-$rv-xy-plot-axis-line-color: #e6e6e9;
-$rv-xy-plot-axis-font-size: 11px;
+$rv-xy-plot-axis-font-color: #BFC4C8;
+$rv-xy-plot-axis-line-color: #E7EAEA;
+$rv-xy-plot-axis-font-size: 12px;
 
-$rv-xy-plot-tooltip-background: #3A3A48;
+$green: #00a05c;
+$red: #ff4538;
+
+$rv-xy-plot-tooltip-background: #363e46;
 $rv-xy-plot-tooltip-color: #fff;
 $rv-xy-plot-tooltip-font-size: 12px;
 $rv-xy-plot-tooltip-border-radius: 4px;
@@ -10,7 +13,9 @@ $rv-xy-plot-tooltip-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 $rv-xy-plot-tooltip-padding: 7px 10px;
 
 .rv-xy-plot {
-  color: #c3c3c3;
+  color: #c5cacd;
+  font-weight: 400;
+  letter-spacing: 0.3px;
   position: relative;
 }
 
@@ -19,9 +24,8 @@ $rv-xy-plot-tooltip-padding: 7px 10px;
 }
 
 .rv-xy-plot__axis {
-
   path {
-    stroke-width: 2px;
+    stroke-width: 1px;
     stroke: $rv-xy-plot-axis-line-color;
     fill: none;
   }
@@ -64,18 +68,38 @@ $rv-xy-plot-tooltip-padding: 7px 10px;
 .rv-crosshair {
   position: absolute;
   font-size: 11px;
-  pointer-events: none;
+  &--hover {
+    padding: 0 5px;
+
+    & .rv-crosshair__inner {
+      display: none;
+    }
+
+    .rv-crosshair__inner--left {
+      right: 10px;
+    }
+
+    .rv-crosshair__inner--right {
+      left: 10px;
+    }
+
+    &:hover {
+      .rv-crosshair__inner {
+        display: block;
+      }
+    }
+  }
 }
 
 .rv-crosshair__line {
-  background: #47d3d9;
-  width: 1px;
+  border-right: 1px dashed #363e46;
 }
 
 .rv-crosshair__inner {
   position: absolute;
   text-align: left;
   top: 0;
+  z-index: 1;
 }
 
 .rv-crosshair__inner__content {
@@ -119,3 +143,5 @@ $rv-xy-plot-tooltip-padding: 7px 10px;
   text-align: left;
   white-space: nowrap;
 }
+
+.rv-xy-plot__background-plot {}

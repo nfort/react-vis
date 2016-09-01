@@ -23,14 +23,13 @@ import React from 'react';
 import AbstractSeries from './abstract-series';
 import BarSeries from './bar-series';
 
-class VerticalBarSeries extends AbstractSeries {
+class HorizontalBackgroundSeries extends AbstractSeries {
 
   static getParentConfig(attr) {
-    const isDomainAdjustmentNeeded = attr === 'x';
-    const zeroBaseValue = attr === 'y';
-
+    // const isDomainAdjustmentNeeded = attr === 'x';
+    const zeroBaseValue = attr === 'x';
     return {
-      isDomainAdjustmentNeeded,
+      // isDomainAdjustmentNeeded,
       zeroBaseValue
     };
   }
@@ -39,15 +38,15 @@ class VerticalBarSeries extends AbstractSeries {
     return (
       <BarSeries
         {...this.props}
-        linePosAttr="x"
-        valuePosAttr="y"
-        lineSizeAttr="width"
-        valueSizeAttr="height"
+        linePosAttr="y"
+        valuePosAttr="x"
+        lineSizeAttr="height"
+        valueSizeAttr="width"
       />
     );
   }
 }
 
-VerticalBarSeries.displayName = 'VerticalBarSeries';
+HorizontalBackgroundSeries.displayName = 'HorizontalBackgroundSeries';
 
-export default VerticalBarSeries;
+export default HorizontalBackgroundSeries;

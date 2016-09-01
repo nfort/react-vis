@@ -51,7 +51,8 @@ export default class Example extends React.Component {
             {x: 1, y: 12},
             {x: 2, y: 2},
             {x: 3, y: 11}
-          ]}/>
+          ]}
+        />
       </XYPlot>
     );
   }
